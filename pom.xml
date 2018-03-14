@@ -1,0 +1,284 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.belle.test</groupId>
+	<artifactId>jmeterMaven</artifactId>
+	<version>0.0.1</version>
+	<name>belle Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+
+	<!-- <scm> <connection> scm:git:https://github.com/mojohaus/buildnumber-maven-plugin.git 
+		</connection> <developerConnection> scm:git:ssh://git@github.com/mojohaus/buildnumber-maven-plugin.git 
+		</developerConnection> <url> https://github.com/mojohaus/buildnumber-maven-plugin 
+		</url> <tag>buildnumber-maven-plugin-1.4</tag> </scm> -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<titleReport>百丽测试报告</titleReport>
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+		<buildtimestamp>${current.time}</buildtimestamp>
+		<jmeter.lib.dir>target/jmeter/lib/ext</jmeter.lib.dir>
+		<restPropertiesPath>src/test/jmeter/rest-properties</restPropertiesPath>
+		<loadPropertiesPath>src/test/jmeter</loadPropertiesPath>
+	</properties>
+
+	<profiles>
+		<!-- 使用maven的profile切换项目各环境的参数 -->
+		<profile>
+			<!-- jenkins测试环境  -Pjenkins-->
+			<id>jenkins</id>
+			<properties>
+				<env>jenkins</env>
+				<profiles.active>jenkins</profiles.active>
+				<!-- <jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir> 
+					<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir> -->
+				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
+				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
+			</properties>
+		</profile>
+
+		<profile>
+			<!-- 本地测试环境  -Ptest-->
+			<id>test</id>
+			<properties>
+				<profiles.active>test</profiles.active>
+				<!-- <env>test</env> -->
+				<!--此文件路径是jenkins的路径，如果不用jenkins，则不能这样写，需要写项目的build路径，如： -->
+				<jmeter.result.jtl.dir>${project.build.directory}\jmeter\results</jmeter.result.jtl.dir>
+				<!-- ${project.build.directory}\jmeter\results -->
+				<jmeter.result.html.dir>${project.build.directory}\jmeter\html</jmeter.result.html.dir>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+	</profiles>
+	<dependencies>
+		<!-- 依赖 -->
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+
+	</dependencies>
+
+	<pluginRepositories>
+		<!-- maven配置私服连接配置，暂时没有用上，先注释掉 -->
+		<!-- <pluginRepository> <id>Codehaus repository</id> <url>http://repository.codehaus.org/</url> 
+			<releases> <enabled>true</enabled> <updatePolicy>always</updatePolicy> </releases> 
+			<snapshots> <enabled>true</enabled> <updatePolicy>always</updatePolicy> </snapshots> 
+			</pluginRepository> -->
+	</pluginRepositories>
+	<build>
+		<filters>
+			<filter>src/test/jmeter/jmeter.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<!-- finalName>bluemoon</finalName> <finalName> ${project.artifactId}-${project.version}_${timestamp} 
+			</finalName> -->
+		<plugins>
+			<plugin>
+				<groupId>com.lazerycode.jmeter</groupId>
+				<artifactId>jmeter-maven-plugin</artifactId>
+				<!-- 使用2.5.0而不是2.6.0的原因是2.6.0的报告格式始终为csv无法修改。20180313测试最新的2.7.0也有这个问题 -->
+				<version>2.5.0</version>
+				<executions>
+					<execution>
+						<id>jmeter-tests</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jmeter</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<!-- 执行接口测试或性能测试时propertiesFilesDirectory需要选择不同的路径，这个变量在文件头部有定义 -->
+					<propertiesFilesDirectory>${restPropertiesPath}</propertiesFilesDirectory>
+					<!-- 配置虚拟机相关 -->
+					<jMeterProcessJVMSettings>
+						<xms>128</xms>
+						<xmx>512</xmx>
+					</jMeterProcessJVMSettings>
+					<propertiesJMeter>
+						<log_level.jmeter>INFO</log_level.jmeter>
+					</propertiesJMeter>
+					<propertiesUser>
+						<threadCount>${jmeter.threadCount}</threadCount>
+						<loopCount>${jmeter.loopCount}</loopCount>
+						<throughput>${jmeter.throughput}</throughput>
+						<duration>${jmeter.duration}</duration>
+					</propertiesUser>
+					<!--报告文件尾部输出时间 -->
+					<appendResultsTimestamp>false</appendResultsTimestamp>
+					<testResultsTimestamp>false</testResultsTimestamp>
+					<resultsFileNameDateFormat>yyyy-MM-dd</resultsFileNameDateFormat>
+					<jmeterExtensions>
+						<!-- jmeter扩展插件 json path assert <artifact>com.jmeter.chajian:jmeter-plugins-json:2.6</artifact> -->
+						<!-- 本地自己写的jar，使用前需要先通过maven注册到本地仓库 -->
+						<artifact>com.belle.test:jmeterUtil:1.0.0</artifact>
+					</jmeterExtensions>
+					<!-- 设置jmeter生成结果文件格式 -->
+					<resultsFileFormat>xml</resultsFileFormat>
+					<!-- 指定jtl生成目录 -->
+					<resultsDirectory>${jmeter.result.jtl.dir}</resultsDirectory>
+				</configuration>
+
+			</plugin>
+			<plugin>
+				<!--根据xsl模版把jtl文件转换成html，官网地址： http://www.mojohaus.org/xml-maven-plugin/examples/transform-saxon.html -->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<transformationSets>
+						<!-- 可以根据不同的模版，同时生成多个报告 -->
+						<transformationSet>
+							<dir>${jmeter.result.jtl.dir}</dir>
+							<stylesheet>src\test\resources\jmeter-results-report-loadtest.xsl</stylesheet>
+							<outputDir>${jmeter.result.html.dir}</outputDir>
+							<parameters>
+								<parameter>
+									<name>dateReport</name>
+									<value>${buildtimestamp}</value>
+								</parameter>
+								<parameter>
+									<name>titleReport</name>
+									<value>${titleReport}</value>
+								</parameter>
+							</parameters>
+							<fileMappers>
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<targetExtension>loadtest.html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+
+						<transformationSet>
+							<dir>${jmeter.result.jtl.dir}</dir>
+							<stylesheet>src\test\resources\jmeter-results-report-loadtest-small.xsl</stylesheet>
+							<parameters>
+								<parameter>
+									<name>dateReport</name>
+									<value>${buildtimestamp}</value>
+								</parameter>
+								<parameter>
+									<name>titleReport</name>
+									<value>${titleReport}</value>
+								</parameter>
+							</parameters>
+							<outputDir>${jmeter.result.html.dir}</outputDir>
+							<!-- 把jtl格式转成html -->
+							<fileMappers>
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<targetExtension>small.html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+						
+	 					<transformationSet>
+							<dir>${jmeter.result.jtl.dir}</dir>
+							<stylesheet>src\test\resources\jmeter.results.shanhe.me.xsl</stylesheet>
+							<parameters>
+								<parameter>
+									<name>dateReport</name>
+									<value>${buildtimestamp}</value>
+								</parameter>
+								<parameter>
+									<name>titleReport</name>
+									<value>${titleReport}</value>
+								</parameter>
+							</parameters>
+							<outputDir>${jmeter.result.html.dir}</outputDir>
+							<!-- 把jtl格式转成html -->
+							<fileMappers>
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<targetExtension>rest.html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+					</transformationSets>
+				</configuration>
+				<!-- using XSLT 2.0 -->
+				<!-- jmeter默认的xsl模板报告是1.0，转换测试报告使用的插件是2.0，此时会出现警告，想消除这个警告，只需把模板的版本改成匹配的2.0即可 -->
+				<dependencies>
+					<dependency>
+						<groupId>net.sf.saxon</groupId>
+						<artifactId>saxon</artifactId>
+						<version>8.7</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<!--maven-resources-plugin复制资源文件 -->
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<!-- 复制图片 <execution> <id>copy-resources</id> <phase>validate</phase> 
+						<goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${jmeter.result.html.dir}</outputDirectory> 
+						<resources> <resource> <directory>src/test/resources/png</directory> <filtering>true</filtering> 
+						<includes> <include>*.png</include> </includes> </resource> </resources> 
+						</configuration> </execution> -->
+					<!-- 复制参数化文件 -->
+					<execution>
+						<id>copy-resources-args</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/jmeter/bin/jmx/args</outputDirectory>
+							<resources>
+								<resource>
+									<directory>src/test/resources/args</directory>
+									<filtering>true</filtering>
+									<includes>
+										<include>*.txt</include>
+										<include>*.csv</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Maven自带时间戳使用${maven.build.timestamp}，但是时区是UTC。 如果要使用GMT+8，就需要插件提供支持 
+				通过build-helper-maven-plugin插件来修改时区 -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>timestamp-property</id>
+						<goals>
+							<goal>timestamp-property</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<name>current.time</name>
+					<pattern>yyyy-MM-dd HH:mm:ss</pattern>
+					<timeZone>GMT+8</timeZone>
+				</configuration>
+			</plugin>
+		</plugins>
+		<defaultGoal>clean</defaultGoal>
+	</build>
+</project>
