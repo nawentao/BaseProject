@@ -40,6 +40,7 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 		</profile>
+
 		<profile>
 			<!-- 本地接口测试 -PRestDebug -->
 			<id>RestDebug</id>
@@ -181,7 +182,7 @@
 				<configuration>
 					<transformationSets>
 						<!-- 可以根据不同的模版，同时生成多个报告 -->
-						<!-- jtl测试结果转html  -->
+						<!-- jtl测试结果转html -->
 						<transformationSet>
 							<dir>${jmeter.result.jtl.dir}</dir>
 							<stylesheet>${jmeter.stylesheet.dir}</stylesheet>
