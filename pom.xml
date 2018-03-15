@@ -13,7 +13,7 @@
 		</url> <tag>buildnumber-maven-plugin-1.4</tag> </scm> -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<titleReport>百丽测试报告</titleReport>
+		<titleReport>自动化测试报告</titleReport>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<buildtimestamp>${current.time}</buildtimestamp>
 		<jmeter.lib.dir>target/jmeter/lib/ext</jmeter.lib.dir>
