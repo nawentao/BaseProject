@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.belle.test</groupId>
-	<artifactId>jmeterMaven</artifactId>
+	<artifactId>BaseProject</artifactId>
 	<version>0.0.1</version>
 	<name>belle Maven Webapp</name>
 	<url>http://maven.apache.org</url>
@@ -18,40 +17,76 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<buildtimestamp>${current.time}</buildtimestamp>
 		<jmeter.lib.dir>target/jmeter/lib/ext</jmeter.lib.dir>
-		<restPropertiesPath>src/test/jmeter/rest-properties</restPropertiesPath>
-		<loadPropertiesPath>src/test/jmeter</loadPropertiesPath>
+		<jmeter.jmx.dir>src/test/resources/jmx/${jmx.dir}</jmeter.jmx.dir>
+		<jmeter.args.dir>src/test/resources/args/${jmx.dir}</jmeter.args.dir>
 	</properties>
 
 	<profiles>
 		<!-- 使用maven的profile切换项目各环境的参数 -->
+		<!--jmeter.result.jtl.dirjmeter.result.html.dir的路径，如果不用jenkins，需要写项目的build路径 -->
 		<profile>
-			<!-- jenkins测试环境  -Pjenkins-->
-			<id>jenkins</id>
+			<!-- 本地性能测试 -PLoadDebug -->
+			<id>LoadDebug</id>
 			<properties>
-				<env>jenkins</env>
-				<profiles.active>jenkins</profiles.active>
-				<!-- <jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir> 
-					<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir> -->
-				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
-				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
-			</properties>
-		</profile>
-
-		<profile>
-			<!-- 本地测试环境  -Ptest-->
-			<id>test</id>
-			<properties>
-				<profiles.active>test</profiles.active>
-				<!-- <env>test</env> -->
-				<!--此文件路径是jenkins的路径，如果不用jenkins，则不能这样写，需要写项目的build路径，如： -->
-				<jmeter.result.jtl.dir>${project.build.directory}\jmeter\results</jmeter.result.jtl.dir>
-				<!-- ${project.build.directory}\jmeter\results -->
-				<jmeter.result.html.dir>${project.build.directory}\jmeter\html</jmeter.result.html.dir>
+				<profiles.active>LoadDebug</profiles.active>
+				<env>LoadDebug</env>
+				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
+				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
+				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
+				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter-results-report-loadtest-small.xsl</jmeter.stylesheet.dir>
+				<jmeter.report.name>Loadtest</jmeter.report.name>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
 		</profile>
+
+
+		<profile>
+			<!-- 本地接口测试 -PRestDebug -->
+			<id>RestDebug</id>
+			<properties>
+				<profiles.active>RestDebug</profiles.active>
+				<env>RestDebug</env>
+				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
+				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
+				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
+				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir>
+				<jmeter.report.name>RestTest</jmeter.report.name>
+			</properties>
+		</profile>
+
+
+		<profile>
+			<!-- jenkins性能测试 -PLoad -->
+			<id>Load</id>
+			<properties>
+				<profiles.active>Load</profiles.active>
+				<env>Load</env>
+				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
+				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
+				<jmeter.properties.dir>src/test/jmeter</jmeter.properties.dir>
+				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter-results-report-loadtest-small.xsl</jmeter.stylesheet.dir>
+				<jmeter.report.name>Loadtest</jmeter.report.name>
+			</properties>
+		</profile>
+
+
+		<profile>
+			<!-- jenkins接口测试 -PRest -->
+			<id>Rest</id>
+			<properties>
+				<profiles.active>Rest</profiles.active>
+				<env>Rest</env>
+				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
+				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
+				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
+				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir>
+				<jmeter.report.name>RestTest</jmeter.report.name>
+			</properties>
+		</profile>
+
+
 	</profiles>
 	<dependencies>
 		<!-- 依赖 -->
@@ -98,12 +133,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 					</execution>
 				</executions>
 				<configuration>
-					<!-- 执行接口测试或性能测试时propertiesFilesDirectory需要选择不同的路径，这个变量在文件头部有定义 -->
-					<propertiesFilesDirectory>${restPropertiesPath}</propertiesFilesDirectory>
+					<!--maven 命令行运行时 -D传入属性参数  -->
+					<testFilesDirectory>${jmeter.jmx.dir}</testFilesDirectory>
+					<!-- 执行接口测试或性能测试时jmeter.properties.dir需要选择不同的路径，这个变量在profiles部分根据实际需要自行配置 -->
+					<propertiesFilesDirectory>${jmeter.properties.dir}</propertiesFilesDirectory>
 					<!-- 配置虚拟机相关 -->
 					<jMeterProcessJVMSettings>
 						<xms>128</xms>
-						<xmx>512</xmx>
+						<xmx>1024</xmx>
 					</jMeterProcessJVMSettings>
 					<propertiesJMeter>
 						<log_level.jmeter>INFO</log_level.jmeter>
@@ -146,9 +183,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 				<configuration>
 					<transformationSets>
 						<!-- 可以根据不同的模版，同时生成多个报告 -->
+						<!-- jtl测试结果转html -->
 						<transformationSet>
 							<dir>${jmeter.result.jtl.dir}</dir>
-							<stylesheet>src\test\resources\jmeter-results-report-loadtest.xsl</stylesheet>
+							<stylesheet>${jmeter.stylesheet.dir}</stylesheet>
 							<outputDir>${jmeter.result.html.dir}</outputDir>
 							<parameters>
 								<parameter>
@@ -163,59 +201,14 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 							<fileMappers>
 								<fileMapper
 									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<targetExtension>loadtest.html</targetExtension>
-								</fileMapper>
-							</fileMappers>
-						</transformationSet>
-
-						<transformationSet>
-							<dir>${jmeter.result.jtl.dir}</dir>
-							<stylesheet>src\test\resources\jmeter-results-report-loadtest-small.xsl</stylesheet>
-							<parameters>
-								<parameter>
-									<name>dateReport</name>
-									<value>${buildtimestamp}</value>
-								</parameter>
-								<parameter>
-									<name>titleReport</name>
-									<value>${titleReport}</value>
-								</parameter>
-							</parameters>
-							<outputDir>${jmeter.result.html.dir}</outputDir>
-							<!-- 把jtl格式转成html -->
-							<fileMappers>
-								<fileMapper
-									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<targetExtension>small.html</targetExtension>
-								</fileMapper>
-							</fileMappers>
-						</transformationSet>
-						
-	 					<transformationSet>
-							<dir>${jmeter.result.jtl.dir}</dir>
-							<stylesheet>src\test\resources\jmeter.results.shanhe.me.xsl</stylesheet>
-							<parameters>
-								<parameter>
-									<name>dateReport</name>
-									<value>${buildtimestamp}</value>
-								</parameter>
-								<parameter>
-									<name>titleReport</name>
-									<value>${titleReport}</value>
-								</parameter>
-							</parameters>
-							<outputDir>${jmeter.result.html.dir}</outputDir>
-							<!-- 把jtl格式转成html -->
-							<fileMappers>
-								<fileMapper
-									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<targetExtension>rest.html</targetExtension>
+									<targetExtension>${jmeter.report.name}.html</targetExtension>
 								</fileMapper>
 							</fileMappers>
 						</transformationSet>
 					</transformationSets>
 				</configuration>
 				<!-- using XSLT 2.0 -->
+
 				<!-- jmeter默认的xsl模板报告是1.0，转换测试报告使用的插件是2.0，此时会出现警告，想消除这个警告，只需把模板的版本改成匹配的2.0即可 -->
 				<dependencies>
 					<dependency>
@@ -246,7 +239,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 							<outputDirectory>target/jmeter/bin/jmx/args</outputDirectory>
 							<resources>
 								<resource>
-									<directory>src/test/resources/args</directory>
+									<directory>${jmeter.args.dir}</directory>
 									<filtering>true</filtering>
 									<includes>
 										<include>*.txt</include>
