@@ -200,7 +200,8 @@
 							<fileMappers>
 								<fileMapper
 									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<targetExtension>${jmeter.report.name}.html</targetExtension>
+									<!--<targetExtension>${jmeter.report.name}.html</targetExtension>  -->
+									<targetExtension>.html</targetExtension>
 								</fileMapper>
 							</fileMappers>
 						</transformationSet>
