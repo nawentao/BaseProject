@@ -40,8 +40,6 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 		</profile>
-
-
 		<profile>
 			<!-- 本地接口测试 -PRestDebug -->
 			<id>RestDebug</id>
