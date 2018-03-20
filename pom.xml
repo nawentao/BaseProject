@@ -77,8 +77,9 @@
 			<properties>
 				<profiles.active>Rest</profiles.active>
 				<env>Rest</env>
+				<!-- ${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl -->
 				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
-				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
+				<jmeter.result.html.dir>${env.WORKSPACE}/target/jmeter/html</jmeter.result.html.dir>
 				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
 				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir>
 				<jmeter.report.name>RestTest</jmeter.report.name>
@@ -132,7 +133,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!--maven 命令行运行时 -D传入属性参数  -->
+					<!--maven 命令行运行时 -D传入属性参数 -->
 					<testFilesDirectory>${jmeter.jmx.dir}</testFilesDirectory>
 					<!-- 执行接口测试或性能测试时jmeter.properties.dir需要选择不同的路径，这个变量在profiles部分根据实际需要自行配置 -->
 					<propertiesFilesDirectory>${jmeter.properties.dir}</propertiesFilesDirectory>
@@ -200,8 +201,32 @@
 							<fileMappers>
 								<fileMapper
 									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<!--<targetExtension>${jmeter.report.name}.html</targetExtension>  -->
+									<!--<targetExtension>${jmeter.report.name}.html</targetExtension> -->
 									<targetExtension>.html</targetExtension>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+
+
+						<transformationSet>
+							<dir>${jmeter.result.jtl.dir}</dir>
+							<stylesheet>src/test/resources/report-template/jmeter-results-detail-report_21.xsl</stylesheet>
+							<outputDir>${jmeter.result.html.dir}</outputDir>
+							<parameters>
+								<parameter>
+									<name>dateReport</name>
+									<value>${buildtimestamp}</value>
+								</parameter>
+								<parameter>
+									<name>titleReport</name>
+									<value>${titleReport}</value>
+								</parameter>
+							</parameters>
+							<fileMappers>
+								<fileMapper
+									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
+									<!--<targetExtension>${jmeter.report.name}.html</targetExtension> -->
+									<targetExtension>detail.html</targetExtension>
 								</fileMapper>
 							</fileMappers>
 						</transformationSet>
