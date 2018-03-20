@@ -210,7 +210,7 @@
 
 						<transformationSet>
 							<dir>${jmeter.result.jtl.dir}</dir>
-							<stylesheet>src/test/resources/report-template/jmeter-results-detail-report_21.xsl</stylesheet>
+							<stylesheet>src/test/resources/report-template/jmeter-results-report-loadtest.xsl</stylesheet>
 							<outputDir>${jmeter.result.html.dir}</outputDir>
 							<parameters>
 								<parameter>
