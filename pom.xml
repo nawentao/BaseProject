@@ -17,8 +17,8 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<buildtimestamp>${current.time}</buildtimestamp>
 		<jmeter.lib.dir>target/jmeter/lib/ext</jmeter.lib.dir>
-		<jmeter.jmx.dir>../jmx/${jmx.dir}</jmeter.jmx.dir>
-		<jmeter.args.dir>../args/${jmx.dir}</jmeter.args.dir>
+		<jmeter.jmx.dir>../testfiles/${jmx.dir}</jmeter.jmx.dir>
+		<jmeter.args.dir>../testfiles/${jmx.dir}/args</jmeter.args.dir>
 	</properties>
 
 	<profiles>
