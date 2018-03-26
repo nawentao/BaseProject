@@ -13,7 +13,7 @@
 		</url> <tag>buildnumber-maven-plugin-1.4</tag> </scm> -->
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<titleReport>自动化测试报告</titleReport>
+		<titleReport>性能自动化测试报告</titleReport>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 		<buildtimestamp>${current.time}</buildtimestamp>
 		<jmeter.lib.dir>target/jmeter/lib/ext</jmeter.lib.dir>
@@ -24,12 +24,14 @@
 	<profiles>
 		<!-- 使用maven的profile切换项目各环境的参数 -->
 		<!--jmeter.result.jtl.dirjmeter.result.html.dir的路径，如果不用jenkins，需要写项目的build路径 -->
+		<!-- 本地性能测试 -PLoadDebug -->
 		<profile>
-			<!-- 本地性能测试 -PLoadDebug -->
 			<id>LoadDebug</id>
 			<properties>
 				<profiles.active>LoadDebug</profiles.active>
 				<env>LoadDebug</env>
+				<jmeter.jmx.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}</jmeter.jmx.dir>
+				<jmeter.args.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}/args</jmeter.args.dir>
 				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
 				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
 				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
@@ -42,22 +44,23 @@
 		</profile>
 
 		<profile>
-			<!-- 本地接口测试 -PRestDebug -->
-			<id>RestDebug</id>
+			<id>detail</id>
 			<properties>
-				<profiles.active>RestDebug</profiles.active>
-				<env>RestDebug</env>
-				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
-				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
-				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
-				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir>
-				<jmeter.report.name>RestTest</jmeter.report.name>
+				<profiles.active>detail</profiles.active>
+				<env>detail</env>
+				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter-results-report-loadtest.xsl</jmeter.stylesheet.dir>
 			</properties>
 		</profile>
 
-
+		<!-- 本地接口测试 -PRestDebug -->
+		<!-- <profile> <id>RestDebug</id> <properties> <profiles.active>RestDebug</profiles.active> 
+			<env>RestDebug</env> <jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir> 
+			<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir> 
+			<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir> 
+			<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir> 
+			<jmeter.report.name>RestTest</jmeter.report.name> </properties> </profile> -->
+		<!-- jenkins性能测试 -PLoad -->
 		<profile>
-			<!-- jenkins性能测试 -PLoad -->
 			<id>Load</id>
 			<properties>
 				<profiles.active>Load</profiles.active>
@@ -70,22 +73,13 @@
 			</properties>
 		</profile>
 
-
-		<profile>
-			<!-- jenkins接口测试 -PRest -->
-			<id>Rest</id>
-			<properties>
-				<profiles.active>Rest</profiles.active>
-				<env>Rest</env>
-				<!-- ${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl -->
-				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
-				<jmeter.result.html.dir>${env.WORKSPACE}/target/jmeter/html</jmeter.result.html.dir>
-				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
-				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir>
-				<jmeter.report.name>RestTest</jmeter.report.name>
-			</properties>
-		</profile>
-
+		<!-- jenkins接口测试 -PRest -->
+		<!-- <profile> <id>Rest</id> <properties> <profiles.active>Rest</profiles.active> 
+			<env>Rest</env> <jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir> 
+			<jmeter.result.html.dir>${env.WORKSPACE}/target/jmeter/html</jmeter.result.html.dir> 
+			<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir> 
+			<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter.results.shanhe.me.xsl</jmeter.stylesheet.dir> 
+			<jmeter.report.name>RestTest</jmeter.report.name> </properties> </profile> -->
 
 	</profiles>
 	<dependencies>
@@ -207,29 +201,14 @@
 							</fileMappers>
 						</transformationSet>
 
-
-						<transformationSet>
-							<dir>${jmeter.result.jtl.dir}</dir>
-							<stylesheet>src/test/resources/report-template/jmeter-results-report-loadtest.xsl</stylesheet>
-							<outputDir>${jmeter.result.html.dir}</outputDir>
-							<parameters>
-								<parameter>
-									<name>dateReport</name>
-									<value>${buildtimestamp}</value>
-								</parameter>
-								<parameter>
-									<name>titleReport</name>
-									<value>${titleReport}</value>
-								</parameter>
-							</parameters>
-							<fileMappers>
-								<fileMapper
-									implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper">
-									<!--<targetExtension>${jmeter.report.name}.html</targetExtension> -->
-									<targetExtension>detail.html</targetExtension>
-								</fileMapper>
-							</fileMappers>
-						</transformationSet>
+						<!-- 此分支专门做性能测试，注释掉多模板 <transformationSet> <dir>${jmeter.result.jtl.dir}</dir> 
+							<stylesheet>src/test/resources/report-template/jmeter-results-report-loadtest.xsl</stylesheet> 
+							<outputDir>${jmeter.result.html.dir}</outputDir> <parameters> <parameter> 
+							<name>dateReport</name> <value>${buildtimestamp}</value> </parameter> <parameter> 
+							<name>titleReport</name> <value>${titleReport}</value> </parameter> </parameters> 
+							<fileMappers> <fileMapper implementation="org.codehaus.plexus.components.io.filemappers.FileExtensionMapper"> 
+							<targetExtension>detail.html</targetExtension> </fileMapper> </fileMappers> 
+							</transformationSet> -->
 					</transformationSets>
 				</configuration>
 				<!-- using XSLT 2.0 -->
