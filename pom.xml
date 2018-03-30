@@ -66,7 +66,7 @@
 				<profiles.active>Load</profiles.active>
 				<env>Load</env>
 				<jmeter.result.jtl.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/jtl</jmeter.result.jtl.dir>
-				<jmeter.result.html.dir>${env.WORKSPACE}/Report/${env.BUILD_ID}/html</jmeter.result.html.dir>
+				<jmeter.result.html.dir>${env.WORKSPACE}/target/jmeter/html</jmeter.result.html.dir>
 				<jmeter.properties.dir>src/test/jmeter</jmeter.properties.dir>
 				<jmeter.stylesheet.dir>src/test/resources/report-template/jmeter-results-report-loadtest-small.xsl</jmeter.stylesheet.dir>
 				<jmeter.report.name>Loadtest</jmeter.report.name>
