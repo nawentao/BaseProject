@@ -37,8 +37,8 @@
         <head>
             <title><xsl:value-of select="$titleReport" /></title>
             <style type="text/css">
-                body { font:normal 68% verdana,arial,helvetica; color:#000000; }
-                table tr td, table tr th { font-size: 68%; }
+                body { font:normal 85% verdana,arial,helvetica; color:#000000; }
+                table tr td, table tr th { font-size: 85%; }
                 table.details tr th { color: #ffffff; font-weight: bold; text-align:center; background:#2674a6; white-space: pre-wrap; }
                 table.details tr td { background:#eeeee0; white-space: pre-wrap; }
                 h1 { margin: 0px 0px 5px; font: 165% verdana,arial,helvetica }

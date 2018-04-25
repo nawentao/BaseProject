@@ -30,6 +30,8 @@
 			<properties>
 				<profiles.active>LoadDebug</profiles.active>
 				<env>LoadDebug</env>
+				<jmeter.jmx.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}</jmeter.jmx.dir>
+				<jmeter.args.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}/args</jmeter.args.dir>
 				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
 				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
 				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
@@ -47,6 +49,8 @@
 			<properties>
 				<profiles.active>RestDebug</profiles.active>
 				<env>RestDebug</env>
+				<jmeter.jmx.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}</jmeter.jmx.dir>
+				<jmeter.args.dir>G:/GIT_REPERTORY/TestCase/${jmx.dir}/args</jmeter.args.dir>
 				<jmeter.result.jtl.dir>${project.build.directory}/jmeter/results</jmeter.result.jtl.dir>
 				<jmeter.result.html.dir>${project.build.directory}/jmeter/html</jmeter.result.html.dir>
 				<jmeter.properties.dir>src/test/jmeter/rest-properties</jmeter.properties.dir>
